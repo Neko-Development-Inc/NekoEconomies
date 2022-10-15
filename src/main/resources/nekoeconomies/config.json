@@ -1,0 +1,34 @@
+{
+  "welcome": "Welcome to NekoEconomies",
+
+  "settings": {
+    "strings": {
+      "no_permission": "&4You don't have permission to run that command.",
+      "requires_player": "&4This command has to be run as a player.",
+      "requires_console": "&4This command has to be run from console.",
+
+
+
+      "reload": {
+        "plugin_reloaded": "Plugin successfully reloaded.",
+        "plugin_not_reloaded": "Plugin failed to reload, check console for errors."
+      },
+
+      "help": [
+        "/eco - Root command",
+        "/nekoeconomies - Alias command"
+      ]
+    },
+    "permissions": {
+      "access": "nekoeconomies.access",
+      "reload": "nekoeconomies.reload",
+      "help": "nekoeconomies.help"
+    },
+    "commands": {
+      "root": "eco",
+      "aliases": [
+        "nekoeconomies"
+      ]
+    }
+  }
+}
