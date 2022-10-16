@@ -29,9 +29,7 @@ public abstract class IStorage
         return true;
     }
 
-    public void save(EcoUser user) {
-
-    }
+    public void save(EcoUser user) { }
 
     public CompletableFuture<Void> saveAsync() {
         return null;

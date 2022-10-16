@@ -66,6 +66,7 @@ public class NekoEconomies {
         }
         userManager.setStorage(storage);
         commandHelper = new CommandHelper(economiesManager, config);
+        NekoEconomiesAPI.init(userManager, economiesManager, config, logger);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(userManager);
     }
