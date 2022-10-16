@@ -131,7 +131,7 @@ public class EcoValue {
     }
     public boolean isGreaterThan(BigDecimal num) {
         synchronized (_lock) {
-            return balance.compareTo(num) > 0;
+            return balance.compareTo(num) >= 0;
         }
     }
 
@@ -141,7 +141,7 @@ public class EcoValue {
     }
     public boolean moveBalance(BigDecimal num, EcoValue toOther) {
         synchronized (_lock) {
-            if (balance.compareTo(num) <= 0) // Not enough money!
+            if (balance.compareTo(num) < 0) // Not enough money!
                 return false;
             synchronized (toOther._lock) {
                 var tmp = balance;
