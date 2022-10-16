@@ -65,4 +65,12 @@ public class NekoEconomiesAPI {
         return economiesManager.getEcoKey(id);
     }
 
+    public EcoKey getDefaultCurrency() {
+        return economiesManager.getDefaultCurrency();
+    }
+
+    public List<EcoKey> getAllCurrencies() {
+        return economiesManager.getAllCurrencies();
+    }
+
 }
