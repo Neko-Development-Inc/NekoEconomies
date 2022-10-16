@@ -59,7 +59,7 @@ public class CommandManager {
                             .executes(eco)
                             .requires(commandHelper::canExecuteCommand);
                     dispatcher.register(cmd);
-                    PermissionAPI.registerNode("minecraft.command." + strCommand, DefaultPermissionLevel.ALL, "Pixelmon Economies");
+                    PermissionAPI.registerNode("minecraft.command." + strCommand, DefaultPermissionLevel.ALL, "Pixelmon Economies /" + strCommand);
                     ecos.add(cmd);
                 }
             }
@@ -70,10 +70,8 @@ public class CommandManager {
                 commandStrings.add(0, config.settings.commands.eco.set.command);
                 for (var strCommand : commandStrings) {
                     var cmd = Commands.literal(strCommand)
-                            .executes(set)
                             .requires(commandHelper::canExecuteCommand)
                             .then(Commands.argument("player", StringArgumentType.word())
-                                    .executes(set)
                                     .suggests(commandHelper::suggestOnlinePlayers)
                                     .requires(commandHelper::canExecuteCommand)
                                     .then(Commands.argument("num", StringArgumentType.word())
@@ -157,7 +155,7 @@ public class CommandManager {
                             .executes(bal)
                             .requires(commandHelper::canExecuteCommand);
                     dispatcher.register(cmd);
-                    PermissionAPI.registerNode("minecraft.command." + strCommand, DefaultPermissionLevel.ALL, "Pixelmon Economies");
+                    PermissionAPI.registerNode("minecraft.command." + strCommand, DefaultPermissionLevel.ALL, "Pixelmon Economies /" + strCommand);
                 }
             }
         }
@@ -172,7 +170,7 @@ public class CommandManager {
                             .executes(baltop)
                             .requires(commandHelper::canExecuteCommand);
                     dispatcher.register(cmd);
-                    PermissionAPI.registerNode("minecraft.command." + strCommand, DefaultPermissionLevel.ALL, "Pixelmon Economies");
+                    PermissionAPI.registerNode("minecraft.command." + strCommand, DefaultPermissionLevel.ALL, "Pixelmon Economies /" + strCommand);
                 }
             }
         }
