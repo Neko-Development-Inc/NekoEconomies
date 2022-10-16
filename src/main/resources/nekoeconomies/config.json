@@ -2,6 +2,36 @@
   "welcome": "Welcome to NekoEconomies",
 
   "settings": {
+
+    "storage": {
+      "converter": {
+        "enabled": false,
+        "from": "flatfile",
+        "to": "mysql",
+
+        "_comment": "If successfully converted, delete/clear the old storage.",
+        "clearFrom": true
+      },
+      "mysql": {
+        "enabled": false,
+        "host": "localhost",
+        "port": 3306,
+        "db": "neko",
+        "user": "root",
+        "password": "",
+
+        "CREATE_TABLE_USERS": "",
+        "GET_ALL_USERS": "",
+        "SAVE_USERS": "",
+        "DELETE_TABLE": "",
+
+        "CREATE_TABLE_TIERS": ""
+      },
+      "flatfile": {
+        "enabled": true
+      }
+    },
+
     "strings": {
       "no_permission": "&4You don't have permission to run that command.",
       "requires_player": "&4This command has to be run as a player.",

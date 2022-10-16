@@ -1,11 +1,16 @@
 package n.e.k.o.economies.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import n.e.k.o.economies.storage.FlatFileStorage;
+import n.e.k.o.economies.storage.IStorage;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -20,9 +25,40 @@ public class Config {
 
     public static class Settings {
 
+        public Storage storage;
         public Strings strings;
         public Permissions permissions;
         public Commands commands;
+
+        public static class Storage {
+            public Converter converter;
+            public Mysql mysql;
+            public Flatfile flatfile;
+
+            public static class Converter {
+                public boolean enabled;
+                public String from;
+                public String to;
+                public boolean clearFrom;
+            }
+
+            public static class Mysql {
+                public boolean enabled;
+                public String host;
+                public int port;
+                public String db;
+                public String user;
+                public String password;
+                public String CREATE_TABLE_USERS;
+                public String GET_ALL_USERS;
+                public String SAVE_USERS;
+                public String DELETE_TABLE;
+            }
+
+            public static class Flatfile {
+                public boolean enabled;
+            }
+        }
 
         public static class Strings {
             public String no_permission;
@@ -71,6 +107,28 @@ public class Config {
             t.printStackTrace();
         }
         return null;
+    }
+
+    public boolean overwriteConfig(IStorage storage, Logger logger) {
+        try {
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            Files.write(configFile.toPath(), gson.toJson(this).getBytes(StandardCharsets.UTF_8));
+            if (settings.storage.converter.clearFrom) {
+                boolean isFile = storage instanceof FlatFileStorage;
+                if (storage.clear())
+                    logger.info("Successfully cleared '" + (isFile ? "FlatFile" : "MySQL") + "' storage.");
+                else
+                    logger.info("Failed clearing '" + (isFile ? "FlatFile" : "MySQL") + "' storage.");
+            }
+        }
+        catch (IOException e) {
+            logger.error(e.getMessage());
+            logger.error(e);
+            return false;
+        }
+        return true;
     }
 
 }

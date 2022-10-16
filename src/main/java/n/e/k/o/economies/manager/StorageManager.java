@@ -1,0 +1,41 @@
+package n.e.k.o.economies.manager;
+
+import n.e.k.o.economies.NekoEconomies;
+import n.e.k.o.economies.storage.FlatFileStorage;
+import n.e.k.o.economies.storage.IStorage;
+import n.e.k.o.economies.storage.StorageConverter;
+import n.e.k.o.economies.utils.Config;
+import org.apache.logging.log4j.Logger;
+
+public class StorageManager {
+
+    public static IStorage getStorage(NekoEconomies nekoEconomies, Logger logger, Config config) {
+        return getStorage(nekoEconomies, logger, config, false);
+    }
+
+    public static IStorage getStorage(NekoEconomies nekoEconomies, Logger logger, Config config, boolean isConverting) {
+        Config.Settings.Storage storage = config.settings.storage;
+        if (storage.converter.enabled && !isConverting) {
+            IStorage fromStorage = getStorage(nekoEconomies, logger, config, true);
+            Object convertResult = StorageConverter.doConversion(storage, fromStorage, nekoEconomies, config, logger);
+            if (convertResult instanceof String) {
+                logger.error(convertResult);
+                return null;
+            } else if (convertResult instanceof IStorage) {
+                if (config.overwriteConfig(fromStorage, logger)) {
+                    logger.info("Conversion successful! Config file was updated to reflect the new values.");
+                    ((IStorage) convertResult).save();
+                }
+                else {
+                    boolean isFile = fromStorage instanceof FlatFileStorage;
+                    String fromName = isFile ? "flatfile" : "mysql";
+                    String toName = isFile ? "mysql" : "flatfile";
+                    logger.warn("Failed overwriting config file! Remember to swap the values in your config file now (" + fromName + " -> " + toName + ") and disable the converter.");
+                }
+                return (IStorage) convertResult;
+            }
+        }
+        return null;
+    }
+
+}

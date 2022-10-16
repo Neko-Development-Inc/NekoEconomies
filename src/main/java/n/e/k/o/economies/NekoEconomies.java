@@ -4,6 +4,9 @@ import n.e.k.o.economies.commands.enums.CommandCheckType;
 import n.e.k.o.economies.commands.enums.CommandCtx;
 import n.e.k.o.economies.manager.CommandManager;
 import n.e.k.o.economies.manager.EconomiesManager;
+import n.e.k.o.economies.manager.StorageManager;
+import n.e.k.o.economies.manager.UserManager;
+import n.e.k.o.economies.storage.IStorage;
 import n.e.k.o.economies.utils.Config;
 import n.e.k.o.economies.utils.StringColorUtils;
 import net.minecraft.command.CommandSource;
@@ -11,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,17 +23,32 @@ import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Mod("nekoeconomies")
 public class NekoEconomies {
 
     private static final Logger logger = LogManager.getLogger();
     private final Config config;
+    private final IStorage storage;
     private final EconomiesManager economiesManager;
 
     public NekoEconomies() {
         config = Config.init("NekoEconomies", logger);
         if (config == null) {
             logger.error("Failed initializing config.");
+            economiesManager = null;
+            storage = null;
+            return;
+        }
+        storage = StorageManager.getStorage(this, logger, config);
+        if (storage == null)
+        {
+            logger.error("Failed initializing storage.");
             economiesManager = null;
             return;
         }
@@ -39,11 +58,35 @@ public class NekoEconomies {
             return;
         }
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new UserManager(this, storage, config, logger));
     }
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
         logger.info(config.welcome);
+    }
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    public CompletableFuture<Void> runAsync(Runnable r) {
+        return CompletableFuture.runAsync(() -> executor.execute(r));
+    }
+
+    private final Queue<Runnable> rQueue = new ConcurrentLinkedQueue<>();
+
+    public void runSync(Runnable r) {
+        if (r == null) return;
+        rQueue.add(r);
+    }
+
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+        while (!rQueue.isEmpty())
+            try {
+                rQueue.poll().run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
     }
 
     @SubscribeEvent
