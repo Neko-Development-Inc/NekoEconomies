@@ -17,21 +17,25 @@ import java.util.List;
 public class CommandManager {
 
     private final NekoEconomies nekoEconomies;
+    private final UserManager userManager;
+    private final EconomiesManager economiesManager;
     private final Config config;
     private final Logger logger;
 
-    public CommandManager(NekoEconomies nekoEconomies, Config config, Logger logger) {
+    public CommandManager(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, Config config, Logger logger) {
         this.nekoEconomies = nekoEconomies;
+        this.userManager = userManager;
+        this.economiesManager = economiesManager;
         this.config = config;
         this.logger = logger;
     }
 
     public void init(CommandDispatcher<CommandSource> dispatcher) {
-        EcoCommand ecoCommand = new EcoCommand(nekoEconomies, config, logger);
-        List<String> commandStrings = new ArrayList<>(config.settings.commands.aliases);
-        commandStrings.add(0, config.settings.commands.root);
-        for (String strCommand : commandStrings) {
-            LiteralArgumentBuilder<CommandSource> cmd = Commands.literal(strCommand)
+        var ecoCommand = new EcoCommand(nekoEconomies, userManager, economiesManager, config, logger);
+        var commandStrings = new ArrayList<>(config.settings.commands.root.aliases);
+        commandStrings.add(0, config.settings.commands.root.command);
+        for (var strCommand : commandStrings) {
+            var cmd = Commands.literal(strCommand)
                     .executes(ecoCommand)
                     .requires(nekoEconomies::canExecuteCommand);
             ecoCommand.register(cmd);

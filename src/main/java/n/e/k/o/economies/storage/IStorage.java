@@ -2,7 +2,7 @@ package n.e.k.o.economies.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import n.e.k.o.economies.EcoUser;
+import n.e.k.o.economies.eco.EcoUser;
 
 import java.util.concurrent.CompletableFuture;
 

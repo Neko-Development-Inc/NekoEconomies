@@ -1,7 +1,26 @@
 {
   "welcome": "Welcome to NekoEconomies",
+  "storage_loaded": "Storage loaded.",
 
   "settings": {
+    "currencies": [
+      {
+        "id": "pokedollars",
+        "displayName": "",
+        "defaultValue": "1000",
+        "isDefaultCurrency": true
+      },
+      {
+        "id": "tokens",
+        "defaultValue": "1",
+        "displayName": "T"
+      },
+      {
+        "id": "coins",
+        "defaultValue": "2",
+        "displayName": "C"
+      }
+    ],
 
     "storage": {
       "converter": {
@@ -20,12 +39,10 @@
         "user": "root",
         "password": "",
 
-        "CREATE_TABLE_USERS": "",
-        "GET_ALL_USERS": "",
-        "SAVE_USERS": "",
-        "DELETE_TABLE": "",
-
-        "CREATE_TABLE_TIERS": ""
+        "CREATE_TABLE_USERS": "CREATE TABLE `economies.users` (`id` int(11) NOT NULL AUTO_INCREMENT, `uuid` varchar(36) NOT NULL, `balances` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL, PRIMARY KEY (`id`,`uuid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+        "GET_ALL_USERS": "SELECT uuid, balances FROM `economies.users`;",
+        "SAVE_USERS": "INSERT INTO `economies.users` (uuid, balances) VALUES %s ON DUPLICATE KEY UPDATE uuid=VALUES(uuid), balances=VALUES(balances);",
+        "DELETE_TABLE": "DROP TABLE IF EXISTS `economies.users`;"
       },
       "flatfile": {
         "enabled": true
@@ -49,16 +66,39 @@
         "/nekoeconomies - Alias command"
       ]
     },
+
     "permissions": {
       "access": "nekoeconomies.access",
       "reload": "nekoeconomies.reload",
-      "help": "nekoeconomies.help"
+      "help": "nekoeconomies.help",
+      "admin": "nekoeconomies.admin"
     },
+
     "commands": {
-      "root": "eco",
-      "aliases": [
-        "nekoeconomies"
-      ]
+      "root": {
+        "command": "eco",
+        "aliases": [
+          "nekoeconomies"
+        ]
+      },
+      "balance": {
+        "command": "bal",
+        "aliases": [
+          "balance"
+        ],
+        "set": {
+          "command": "set",
+          "aliases": [ ]
+        },
+        "get": {
+          "command": "get",
+          "aliases": [ ]
+        },
+        "clear": {
+          "command": "clear",
+          "aliases": [ ]
+        }
+      }
     }
   }
 }

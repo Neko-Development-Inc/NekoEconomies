@@ -127,8 +127,6 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation files("C:\\Users\\kurok\\Desktop\\1.16.5 forge pixelmon\\mods\\Pixelmon-1.16.5-9.0.7-universal.jar")
-
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2

@@ -21,14 +21,23 @@ public class Config {
     public transient File configFile = null;
 
     public String welcome;
+    public String storage_loaded;
     public Settings settings;
 
     public static class Settings {
 
+        public ArrayList<Currency> currencies;
         public Storage storage;
         public Strings strings;
         public Permissions permissions;
         public Commands commands;
+
+        public static class Currency {
+            public String id;
+            public String displayName;
+            public String defaultValue;
+            public boolean isDefaultCurrency;
+        }
 
         public static class Storage {
             public Converter converter;
@@ -78,11 +87,31 @@ public class Config {
             public String access;
             public String reload;
             public String help;
+            public String admin;
         }
 
         public static class Commands {
-            public String root;
-            public ArrayList<String> aliases;
+            public Root root;
+            public Balance balance;
+
+            public abstract static class CommandRoot {
+                public String command;
+                public ArrayList<String> aliases;
+            }
+
+            public static class Root extends CommandRoot { }
+
+            public static class Balance extends CommandRoot {
+                public Set set;
+                public Get get;
+                public Clear clear;
+
+                public static class Set extends CommandRoot { }
+
+                public static class Get extends CommandRoot { }
+
+                public static class Clear extends CommandRoot { }
+            }
         }
     }
 

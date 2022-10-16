@@ -1,7 +1,8 @@
 package n.e.k.o.economies.storage;
 
-import n.e.k.o.economies.EcoUser;
+import n.e.k.o.economies.eco.EcoUser;
 import n.e.k.o.economies.NekoEconomies;
+import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.utils.Config;
 import org.apache.commons.dbcp2.*;
@@ -11,10 +12,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 public class MysqlStorage implements IStorage {
 
     private final NekoEconomies nekoEconomies;
+    private final UserManager userManager;
+    private final EconomiesManager economiesManager;
     private final Config config;
     private final Logger logger;
 
@@ -32,8 +32,10 @@ public class MysqlStorage implements IStorage {
     private final String SAVE_USERS;
     private final String DELETE_TABLE;
 
-    public MysqlStorage(NekoEconomies nekoEconomies, Config config, Logger logger) {
+    public MysqlStorage(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, Config config, Logger logger) {
         this.nekoEconomies = nekoEconomies;
+        this.userManager = userManager;
+        this.economiesManager = economiesManager;
         this.config = config;
         this.logger = logger;
 
@@ -44,11 +46,11 @@ public class MysqlStorage implements IStorage {
         this.SAVE_USERS = mysql.SAVE_USERS;
         this.DELETE_TABLE = mysql.DELETE_TABLE;
 
-        Properties properties = new Properties();
+        var properties = new Properties();
         properties.setProperty("user", mysql.user);
         properties.setProperty("password", mysql.password);
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(String.format("jdbc:mysql://%s:%d/%s", mysql.host, mysql.port, mysql.db), properties);
-        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+        var connectionFactory = new DriverManagerConnectionFactory(String.format("jdbc:mysql://%s:%d/%s", mysql.host, mysql.port, mysql.db), properties);
+        var poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
         GenericObjectPoolConfig<PoolableConnection> _config = new GenericObjectPoolConfig<>();
         _config.setMaxTotal(25);
         _config.setMaxIdle(10);
@@ -69,6 +71,7 @@ public class MysqlStorage implements IStorage {
         catch (Throwable t) {
             logger.error(t.getMessage());
             logger.error(t);
+            t.printStackTrace();
             return false;
         }
         finally {
@@ -86,13 +89,13 @@ public class MysqlStorage implements IStorage {
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(GET_ALL_USERS);
-            ResultSet result = stmt.executeQuery();
-            List<Map<String, Object>> list = new ArrayList<>();
+            var stmt = connection.prepareStatement(GET_ALL_USERS);
+            var result = stmt.executeQuery();
+            var list = new ArrayList<>();
             while (result.next()) {
-                Map<String, Object> map = new HashMap<>();
-                // TODO: Add user variables
-//                map.put("uuid", result.getString("uuid"));
+                var map = new HashMap<>();
+                map.put("uuid", result.getString("uuid"));
+                map.put("balances", result.getString("balances"));
                 list.add(map);
             }
             return list;
@@ -100,6 +103,7 @@ public class MysqlStorage implements IStorage {
         catch (Throwable t) {
             logger.error(t.getMessage());
             logger.error(t);
+            t.printStackTrace();
             return null;
         }
         finally {
@@ -109,6 +113,7 @@ public class MysqlStorage implements IStorage {
             } catch (SQLException e) {
                 logger.error(e.getMessage());
                 logger.error(e);
+                e.printStackTrace();
             }
         }
     }
@@ -118,40 +123,35 @@ public class MysqlStorage implements IStorage {
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            StringJoiner values = new StringJoiner(", ");
-            List<Object> items = new LinkedList<>();
-            List<EcoUser> updatedUsers = new ArrayList<>();
-            for (EcoUser user : UserManager.getAllUsers()) {
+            var values = new StringJoiner(", ");
+            var items = new LinkedList<>();
+            var updatedUsers = new ArrayList<EcoUser>();
+            for (var user : userManager.getAllUsers()) {
                 logger.info("saving user " + user.getUuid() + ", hasUpdate: " + user.hasUpdate());
                 if (!user.hasUpdate()) continue;
-                values.add("(?, ?, ?, ?, ?)");
-                UUID uuid = user.getUuid();
+                values.add("(?, ?)");
+                var uuid = user.getUuid();
                 items.add(uuid.toString());
-//                items.add(user.getElo());
-//                items.add(user.getWins());
-//                items.add(user.getLosses());
-//                items.add(getLastBattlesString(user.getLastBattles()));
+                items.add(gson.toJson(NekoEconomies.currenciesToMapString(user.balances)));
                 updatedUsers.add(user);
             }
             if (!updatedUsers.isEmpty()) {
-                String QUERY = SAVE_USERS.replace("%s", values.toString());
-                PreparedStatement stmt = connection.prepareStatement(QUERY);
-                for (int i = 0; i < items.size(); i += 5) { // TODO: Change number '5' to the amount of variables!
-                    stmt.setString(i + 1, (String) items.get(i));                            // uuid
-//                    stmt.setBigDecimal(i + 2, BigDecimal.valueOf((float) items.get(i + 1))); // elo
-//                    stmt.setInt(   i + 3, (int) items.get(i + 2));                           // wins
-//                    stmt.setInt(   i + 4, (int) items.get(i + 3));                           // losses
-//                    stmt.setString(i + 5, (String) items.get(i + 4));                        // lastBattles
+                var QUERY = SAVE_USERS.replace("%s", values.toString());
+                var stmt = connection.prepareStatement(QUERY);
+                for (int i = 0; i < items.size(); i += 2) {
+                    stmt.setString(i + 1, (String) items.get(i));     // uuid
+                    stmt.setString(i + 2, (String) items.get(i + 1)); // balances
                 }
                 logger.info("DEBUG 2: '" + stmt + "'");
                 stmt.execute();
-                for (EcoUser user : updatedUsers)
+                for (var user : updatedUsers)
                     user.setSaved();
             }
         }
         catch (Throwable t) {
             logger.error(t.getMessage());
             logger.error(t);
+            t.printStackTrace();
             return false;
         }
         finally {
@@ -161,6 +161,7 @@ public class MysqlStorage implements IStorage {
             } catch (SQLException e) {
                 logger.error(e.getMessage());
                 logger.error(e);
+                e.printStackTrace();
             }
         }
         return true;
@@ -172,13 +173,10 @@ public class MysqlStorage implements IStorage {
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            String QUERY = SAVE_USERS.replace("%s", "(?, ?, ?, ?, ?)");
-            PreparedStatement stmt = connection.prepareStatement(QUERY);
-            stmt.setString(1, user.getUuid().toString());                   // uuid
-//            stmt.setBigDecimal(2, BigDecimal.valueOf(user.getElo()));       // elo
-//            stmt.setInt(   3, user.getWins());                              // wins
-//            stmt.setInt(   4, user.getLosses());                            // losses
-//            stmt.setString(5, getLastBattlesString(user.getLastBattles())); // lastBattles
+            var QUERY = SAVE_USERS.replace("%s", "(?, ?)");
+            var stmt = connection.prepareStatement(QUERY);
+            stmt.setString(1, user.getUuid().toString());  // uuid
+            stmt.setString(2, gson.toJson(NekoEconomies.currenciesToMapString(user.balances))); // balances
             logger.info("DEBUG: '" + stmt + "'");
             stmt.execute();
             user.setSaved();
@@ -186,6 +184,7 @@ public class MysqlStorage implements IStorage {
         catch (Throwable t) {
             logger.error(t.getMessage());
             logger.error(t);
+            t.printStackTrace();
         }
         finally {
             try {
@@ -194,6 +193,7 @@ public class MysqlStorage implements IStorage {
             } catch (SQLException e) {
                 logger.error(e.getMessage());
                 logger.error(e);
+                e.printStackTrace();
             }
         }
     }
@@ -205,14 +205,14 @@ public class MysqlStorage implements IStorage {
 
     @Override
     public boolean load() {
-        Object result = getAllUsersFromSQL();
+        var result = getAllUsersFromSQL();
         if (!(result instanceof ArrayList)) {
             logger.error("Failed loading users from SQL.");
             return false;
         }
-        List<Map<String, Object>> list = (List<Map<String, Object>>) result;
-        for (Map<String, Object> map : list)
-            UserManager.create(map, config);
+        var list = (List<Map<String, Object>>) result;
+        for (var map : list)
+            userManager.create(map, config, economiesManager);
         return true;
     }
 
@@ -232,6 +232,7 @@ public class MysqlStorage implements IStorage {
         catch (Throwable t) {
             logger.error(t.getMessage());
             logger.error(t);
+            t.printStackTrace();
         }
         finally {
             try {
@@ -240,6 +241,7 @@ public class MysqlStorage implements IStorage {
             } catch (SQLException e) {
                 logger.error(e.getMessage());
                 logger.error(e);
+                e.printStackTrace();
             }
         }
         return false;
