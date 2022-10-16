@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 public abstract class IStorage
 {
 
-    Gson gson = generateGson();
+    Gson gson;
 
     Gson generateGson() {
         return generateGson(true);

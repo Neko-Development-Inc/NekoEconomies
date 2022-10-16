@@ -40,6 +40,7 @@ public class MysqlStorage extends IStorage {
         this.economiesManager = economiesManager;
         this.config = config;
         this.logger = logger;
+        this.gson = generateGson();
 
         Config.Settings.Storage.Mysql mysql = config.settings.storage.mysql;
 

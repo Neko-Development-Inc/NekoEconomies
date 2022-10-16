@@ -37,6 +37,7 @@ public class FlatFileStorage extends IStorage {
         this.economiesManager = economiesManager;
         this.config = config;
         this.logger = logger;
+        this.gson = generateGson();
     }
 
     @Override
