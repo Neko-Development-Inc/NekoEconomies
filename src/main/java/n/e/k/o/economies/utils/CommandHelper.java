@@ -7,8 +7,6 @@ import n.e.k.o.economies.commands.enums.CommandCheckType;
 import n.e.k.o.economies.commands.enums.CommandCtx;
 import n.e.k.o.economies.eco.EcoKey;
 import n.e.k.o.economies.manager.EconomiesManager;
-import n.e.k.o.economies.utils.Config;
-import n.e.k.o.economies.utils.StringColorUtils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
