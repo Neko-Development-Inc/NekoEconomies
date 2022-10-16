@@ -87,6 +87,14 @@
           "command": "set",
           "aliases": [ "s" ]
         },
+        "add": {
+          "command": "add",
+          "aliases": [ "a" ]
+        },
+        "subtract": {
+          "command": "subtract",
+          "aliases": [ "sub", "s" ]
+        },
         "clear": {
           "command": "clear",
           "aliases": [ "c" ]

@@ -8,9 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.commands.*;
-import n.e.k.o.economies.commands.admin.EcoClearCommand;
-import n.e.k.o.economies.commands.admin.EcoSetCommand;
-import n.e.k.o.economies.commands.admin.ReloadCommand;
+import n.e.k.o.economies.commands.admin.*;
 import n.e.k.o.economies.eco.EcoKey;
 import n.e.k.o.economies.storage.IStorage;
 import n.e.k.o.economies.utils.CommandHelper;
@@ -88,6 +86,72 @@ public class CommandManager {
                                     .requires(commandHelper::canExecuteCommand)
                                     .then(Commands.argument("currency", StringArgumentType.word())
                                             .executes(set)
+                                            .suggests(commandHelper::suggestCurrencies)
+                                            .requires(commandHelper::canExecuteCommand)
+                                    )
+                            );
+                    for (LiteralArgumentBuilder<CommandSource> literalArgumentBuilder : ecos)
+                        dispatcher.register(literalArgumentBuilder.then(cmd));
+                }
+            }
+
+            // /eco add [player] <num> [currency]
+            var add = new EcoAddCommand(nekoEconomies, userManager, economiesManager, storage, commandHelper, config, logger); {
+                var commandStrings = new ArrayList<>(config.settings.commands.eco.add.aliases);
+                commandStrings.add(0, config.settings.commands.eco.add.command);
+                for (var strCommand : commandStrings) {
+                    var cmd = Commands.literal(strCommand)
+                            .requires(commandHelper::canExecuteCommand)
+                            .then(Commands.argument("player", StringArgumentType.word())
+                                    .suggests(commandHelper::suggestOnlinePlayers)
+                                    .requires(commandHelper::canExecuteCommand)
+                                    .then(Commands.argument("num", StringArgumentType.word())
+                                            .executes(add)
+                                            .requires(commandHelper::canExecuteCommand)
+                                            .then(Commands.argument("currency", StringArgumentType.word())
+                                                    .executes(add)
+                                                    .suggests(commandHelper::suggestCurrencies)
+                                                    .requires(commandHelper::canExecuteCommand)
+                                            )
+                                    )
+                            ).then(Commands.argument("num", StringArgumentType.word())
+                                    .executes(add)
+                                    .requires(commandHelper::canExecuteCommand)
+                                    .then(Commands.argument("currency", StringArgumentType.word())
+                                            .executes(add)
+                                            .suggests(commandHelper::suggestCurrencies)
+                                            .requires(commandHelper::canExecuteCommand)
+                                    )
+                            );
+                    for (LiteralArgumentBuilder<CommandSource> literalArgumentBuilder : ecos)
+                        dispatcher.register(literalArgumentBuilder.then(cmd));
+                }
+            }
+
+            // /eco subtract [player] <num> [currency]
+            var subtract = new EcoSubtractCommand(nekoEconomies, userManager, economiesManager, storage, commandHelper, config, logger); {
+                var commandStrings = new ArrayList<>(config.settings.commands.eco.subtract.aliases);
+                commandStrings.add(0, config.settings.commands.eco.subtract.command);
+                for (var strCommand : commandStrings) {
+                    var cmd = Commands.literal(strCommand)
+                            .requires(commandHelper::canExecuteCommand)
+                            .then(Commands.argument("player", StringArgumentType.word())
+                                    .suggests(commandHelper::suggestOnlinePlayers)
+                                    .requires(commandHelper::canExecuteCommand)
+                                    .then(Commands.argument("num", StringArgumentType.word())
+                                            .executes(subtract)
+                                            .requires(commandHelper::canExecuteCommand)
+                                            .then(Commands.argument("currency", StringArgumentType.word())
+                                                    .executes(subtract)
+                                                    .suggests(commandHelper::suggestCurrencies)
+                                                    .requires(commandHelper::canExecuteCommand)
+                                            )
+                                    )
+                            ).then(Commands.argument("num", StringArgumentType.word())
+                                    .executes(subtract)
+                                    .requires(commandHelper::canExecuteCommand)
+                                    .then(Commands.argument("currency", StringArgumentType.word())
+                                            .executes(subtract)
                                             .suggests(commandHelper::suggestCurrencies)
                                             .requires(commandHelper::canExecuteCommand)
                                     )

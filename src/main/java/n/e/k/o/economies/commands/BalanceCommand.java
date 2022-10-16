@@ -59,9 +59,9 @@ public class BalanceCommand implements Command<CommandSource> {
         }
 
         if (otherPlayer.player != null)
-            System.out.println("Checking player: " + otherPlayer.player.getName().getString());
+            logger.info("Checking player: " + otherPlayer.player.getName().getString());
         else
-            System.out.println("Checking player: " + otherPlayer.uuid);
+            logger.info("Checking player: " + otherPlayer.uuid);
 
         for (var currency : economiesManager.getAllCurrencies()) {
             var value = otherPlayer.getCurrency(currency);

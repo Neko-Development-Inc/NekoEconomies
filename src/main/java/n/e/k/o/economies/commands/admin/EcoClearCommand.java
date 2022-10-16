@@ -72,12 +72,12 @@ public class EcoClearCommand implements Command<CommandSource> {
         }
 
         if (otherPlayer.player != null)
-            System.out.println("Clearing balance for player " + otherPlayer.player.getName().getString() + " for currency " + ecoKey.getId());
+            logger.info("Clearing balance for player " + otherPlayer.player.getName().getString() + " for currency " + ecoKey.getId());
         else
-            System.out.println("Clearing balance for player " + otherPlayer.uuid + " for currency " + ecoKey.getId());
+            logger.info("Clearing balance for player " + otherPlayer.uuid + " for currency " + ecoKey.getId());
 
         EcoValue ecoValue = otherPlayer.clearCurrencyValue(ecoKey);
-        System.out.println("  New balance: " + ecoValue.getBalanceString(3));
+        logger.info("  New balance: " + ecoValue.getBalanceString(3));
 
         return SINGLE_SUCCESS;
     }

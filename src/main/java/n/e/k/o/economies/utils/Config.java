@@ -105,11 +105,17 @@ public class Config {
 
             public static class Eco extends CommandRoot {
                 public Set set;
+                public Add add;
+                public Subtract subtract;
                 public Clear clear;
                 public Help help;
                 public Reload reload;
 
                 public static class Set extends CommandRoot { }
+
+                public static class Add extends CommandRoot { }
+
+                public static class Subtract extends CommandRoot { }
 
                 public static class Clear extends CommandRoot { }
 

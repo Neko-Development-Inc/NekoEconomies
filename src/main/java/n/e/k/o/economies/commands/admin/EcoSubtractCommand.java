@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 
-public class EcoSetCommand implements Command<CommandSource> {
+public class EcoSubtractCommand implements Command<CommandSource> {
 
     private final NekoEconomies nekoEconomies;
     private final UserManager userManager;
@@ -30,7 +30,7 @@ public class EcoSetCommand implements Command<CommandSource> {
     private final Config config;
     private final Logger logger;
 
-    public EcoSetCommand(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, IStorage storage, CommandHelper commandHelper, Config config, Logger logger) {
+    public EcoSubtractCommand(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, IStorage storage, CommandHelper commandHelper, Config config, Logger logger) {
         this.nekoEconomies = nekoEconomies;
         this.userManager = userManager;
         this.economiesManager = economiesManager;
@@ -46,7 +46,7 @@ public class EcoSetCommand implements Command<CommandSource> {
         if (!commandHelper.canExecuteCommand(source, config.settings.permissions.admin, true))
             return SINGLE_SUCCESS;
 
-        source.sendFeedback(StringColorUtils.getColoredString("BalanceSetCommand command"), true);
+        source.sendFeedback(StringColorUtils.getColoredString("BalanceSubtractCommand command"), true);
 
         String num;
         try {
@@ -94,7 +94,7 @@ public class EcoSetCommand implements Command<CommandSource> {
         else
             logger.info("Setting balance for player " + otherPlayer.uuid + " for currency " + ecoKey.getId());
 
-        EcoValue ecoValue = otherPlayer.setCurrencyValue(ecoKey, bigDecimal);
+        EcoValue ecoValue = otherPlayer.subtractCurrencyValue(ecoKey, bigDecimal);
         logger.info("  New balance: " + ecoValue.getBalanceString(3));
 
         return SINGLE_SUCCESS;

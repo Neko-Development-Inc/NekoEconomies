@@ -105,13 +105,13 @@ public class FlatFileStorage extends IStorage {
             if (userFiles == null || userFiles.length == 0) continue;
             for (var userFile : userFiles) {
                 try {
-                    System.out.println("fileName: " + userFile.getName());
+                    logger.info("fileName: " + userFile.getName());
                     var matcher = uuidMatcher.matcher(userFile.getName());
                     if (matcher.find()) {
                         var match = matcher.group();
-                        System.out.println("match: " + match);
+                        logger.info("match: " + match);
                         var uuid = match.contains(".") ? match.substring(0, match.lastIndexOf('.')) : match;
-                        System.out.println("uuid: '" + uuid + "'");
+                        logger.info("uuid: '" + uuid + "'");
                         var user = new EcoUser(UUID.fromString(uuid), economiesManager, config);
                         user.balances.putAll(NekoEconomies.mapStringToCurrencies(user, Files.readString(userFile.toPath()), economiesManager));
                         userManager.add(user);
