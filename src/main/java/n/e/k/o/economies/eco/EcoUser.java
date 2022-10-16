@@ -47,6 +47,10 @@ public class EcoUser {
         return uuid;
     }
 
+    public EcoValue getDefaultCurrency() {
+        return balances.get(economiesManager.getDefaultCurrency());
+    }
+
     public EcoValue getCurrency(EcoKey currency) {
         return balances.get(currency);
     }
