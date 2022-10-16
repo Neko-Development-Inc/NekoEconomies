@@ -1,5 +1,7 @@
 package n.e.k.o.economies.storage;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import n.e.k.o.economies.eco.EcoUser;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.manager.EconomiesManager;
@@ -17,7 +19,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class MysqlStorage implements IStorage {
+public class MysqlStorage extends IStorage {
 
     private final NekoEconomies nekoEconomies;
     private final UserManager userManager;
@@ -58,6 +60,11 @@ public class MysqlStorage implements IStorage {
         ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory, _config);
         poolableConnectionFactory.setPool(connectionPool);
         dataSource = new PoolingDataSource<>(connectionPool);
+    }
+
+    @Override
+    Gson generateGson() {
+        return super.generateGson(config.settings.storage.mysql.minify);
     }
 
     @Override
@@ -175,7 +182,7 @@ public class MysqlStorage implements IStorage {
             connection = dataSource.getConnection();
             var QUERY = SAVE_USERS.replace("%s", "(?, ?)");
             var stmt = connection.prepareStatement(QUERY);
-            stmt.setString(1, user.getUuid().toString());  // uuid
+            stmt.setString(1, user.getUuid().toString()); // uuid
             stmt.setString(2, gson.toJson(NekoEconomies.currenciesToMapString(user.balances))); // balances
             logger.info("DEBUG: '" + stmt + "'");
             stmt.execute();

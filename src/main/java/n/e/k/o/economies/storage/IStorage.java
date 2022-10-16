@@ -6,30 +6,51 @@ import n.e.k.o.economies.eco.EcoUser;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface IStorage
+public abstract class IStorage
 {
 
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = generateGson();
 
-    default boolean init()
-    {
+    Gson generateGson() {
+        return generateGson(true);
+    }
+
+    Gson generateGson(boolean minify) {
+        var gson = new GsonBuilder();
+        if (!minify) gson.setPrettyPrinting();
+        return gson.create();
+    }
+
+    public boolean init() {
         return true;
     }
 
-    boolean save();
+    public boolean save() {
+        return true;
+    }
 
-    void save(EcoUser user);
+    public void save(EcoUser user) {
 
-    CompletableFuture<Void> saveAsync();
+    }
 
-    boolean load();
+    public CompletableFuture<Void> saveAsync() {
+        return null;
+    }
 
-    CompletableFuture<Void> loadAsync();
+    public boolean load() {
+        return true;
+    }
+
+    public CompletableFuture<Void> loadAsync() {
+        return null;
+    }
 
     /**
      * Clear/delete the storage data
      * @return boolean true or false (success or fail)
      */
-    boolean clear();
+    public boolean clear() {
+        return true;
+    }
 
 }

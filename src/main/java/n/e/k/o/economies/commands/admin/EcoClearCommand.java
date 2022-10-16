@@ -1,12 +1,13 @@
-package n.e.k.o.economies.commands;
+package n.e.k.o.economies.commands.admin;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import n.e.k.o.economies.NekoEconomies;
-import n.e.k.o.economies.commands.enums.CommandCtx;
+import n.e.k.o.economies.eco.EcoKey;
 import n.e.k.o.economies.eco.EcoUser;
+import n.e.k.o.economies.eco.EcoValue;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
@@ -17,7 +18,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.Logger;
 
-public class BalanceCommand implements Command<CommandSource> {
+public class EcoClearCommand implements Command<CommandSource> {
 
     private final NekoEconomies nekoEconomies;
     private final UserManager userManager;
@@ -27,7 +28,7 @@ public class BalanceCommand implements Command<CommandSource> {
     private final Config config;
     private final Logger logger;
 
-    public BalanceCommand(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, IStorage storage, CommandHelper commandHelper, Config config, Logger logger) {
+    public EcoClearCommand(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, IStorage storage, CommandHelper commandHelper, Config config, Logger logger) {
         this.nekoEconomies = nekoEconomies;
         this.userManager = userManager;
         this.economiesManager = economiesManager;
@@ -40,10 +41,10 @@ public class BalanceCommand implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
         var source = ctx.getSource();
-        if (!commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, true))
+        if (!commandHelper.canExecuteCommand(source, config.settings.permissions.admin, true))
             return SINGLE_SUCCESS;
 
-        source.sendFeedback(StringColorUtils.getColoredString("All your balances:"), true);
+        source.sendFeedback(StringColorUtils.getColoredString("BalanceClearCommand command"), true);
 
         EcoUser otherPlayer;
         try {
@@ -58,15 +59,25 @@ public class BalanceCommand implements Command<CommandSource> {
             otherPlayer = userManager.getUser(source.asPlayer().getUniqueID());
         }
 
-        if (otherPlayer.player != null)
-            System.out.println("Checking player: " + otherPlayer.player.getName().getString());
-        else
-            System.out.println("Checking player: " + otherPlayer.uuid);
-
-        for (var currency : economiesManager.getAllCurrencies()) {
-            var value = otherPlayer.getCurrency(currency);
-            source.sendFeedback(StringColorUtils.getColoredString("  [" + currency.getId() + "] " + value.getBalanceString(3)), true);
+        EcoKey ecoKey;
+        try {
+            String strCurrency = ctx.getArgument("currency", String.class);
+            ecoKey = economiesManager.getEcoKey(strCurrency);
+            if (ecoKey == null) {
+                source.sendFeedback(StringColorUtils.getColoredString("Currency not found by name '" + strCurrency + "'."), true);
+                return 0;
+            }
+        } catch (IllegalArgumentException e) {
+            ecoKey = economiesManager.getDefaultCurrency();
         }
+
+        if (otherPlayer.player != null)
+            System.out.println("Clearing balance for player " + otherPlayer.player.getName().getString() + " for currency " + ecoKey.getId());
+        else
+            System.out.println("Clearing balance for player " + otherPlayer.uuid + " for currency " + ecoKey.getId());
+
+        EcoValue ecoValue = otherPlayer.clearCurrencyValue(ecoKey);
+        System.out.println("  New balance: " + ecoValue.getBalanceString(3));
 
         return SINGLE_SUCCESS;
     }

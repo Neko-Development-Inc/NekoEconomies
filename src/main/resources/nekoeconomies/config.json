@@ -38,14 +38,16 @@
         "db": "neko",
         "user": "root",
         "password": "",
+        "minify": true,
 
-        "CREATE_TABLE_USERS": "CREATE TABLE `economies.users` (`id` int(11) NOT NULL AUTO_INCREMENT, `uuid` varchar(36) NOT NULL, `balances` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL, PRIMARY KEY (`id`,`uuid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+        "CREATE_TABLE_USERS": "CREATE TABLE IF NOT EXISTS  `economies.users` (`id` int(11) NOT NULL AUTO_INCREMENT, `uuid` varchar(36) NOT NULL, `balances` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL, PRIMARY KEY (`id`,`uuid`), UNIQUE KEY `unique_uuid` (`uuid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
         "GET_ALL_USERS": "SELECT uuid, balances FROM `economies.users`;",
         "SAVE_USERS": "INSERT INTO `economies.users` (uuid, balances) VALUES %s ON DUPLICATE KEY UPDATE uuid=VALUES(uuid), balances=VALUES(balances);",
         "DELETE_TABLE": "DROP TABLE IF EXISTS `economies.users`;"
       },
       "flatfile": {
-        "enabled": true
+        "enabled": true,
+        "minify": false
       }
     },
 
@@ -69,35 +71,42 @@
 
     "permissions": {
       "access": "nekoeconomies.access",
+      "baltop": "nekoeconomies.baltop",
       "reload": "nekoeconomies.reload",
       "help": "nekoeconomies.help",
       "admin": "nekoeconomies.admin"
     },
 
     "commands": {
-      "root": {
+      "eco": {
         "command": "eco",
         "aliases": [
           "nekoeconomies"
-        ]
-      },
-      "balance": {
-        "command": "bal",
-        "aliases": [
-          "balance"
         ],
         "set": {
           "command": "set",
-          "aliases": [ ]
-        },
-        "get": {
-          "command": "get",
-          "aliases": [ ]
+          "aliases": [ "s" ]
         },
         "clear": {
           "command": "clear",
-          "aliases": [ ]
+          "aliases": [ "c" ]
+        },
+        "help": {
+          "command": "help",
+          "aliases": [ "h" ]
+        },
+        "reload": {
+          "command": "reload",
+          "aliases": [ "r" ]
         }
+      },
+      "balance": {
+        "command": "bal",
+        "aliases": [ "balance" ]
+      },
+      "baltop": {
+        "command": "baltop",
+        "aliases": [ "balancetop" ]
       }
     }
   }

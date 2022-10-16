@@ -1,5 +1,7 @@
 package n.e.k.o.economies.storage;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import n.e.k.o.economies.eco.EcoUser;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.manager.EconomiesManager;
@@ -19,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
-public class FlatFileStorage implements IStorage {
+public class FlatFileStorage extends IStorage {
 
     private final NekoEconomies nekoEconomies;
     private final UserManager userManager;
@@ -35,6 +37,11 @@ public class FlatFileStorage implements IStorage {
         this.economiesManager = economiesManager;
         this.config = config;
         this.logger = logger;
+    }
+
+    @Override
+    Gson generateGson() {
+        return super.generateGson(config.settings.storage.flatfile.minify);
     }
 
     @Override
@@ -72,8 +79,7 @@ public class FlatFileStorage implements IStorage {
             if (!exists || hasUpdate) {
                 String output = gson.toJson(NekoEconomies.currenciesToMapString(user.balances));
                 Files.write(userFile.toPath(), output.getBytes(StandardCharsets.UTF_8));
-                if (hasUpdate)
-                    user.setSaved();
+                user.setSaved();
             }
         } catch (Throwable t) {
             logger.error(t.getMessage());

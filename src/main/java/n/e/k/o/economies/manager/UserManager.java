@@ -34,7 +34,7 @@ public class UserManager {
     }
 
     public EcoUser getUser(String uuid) {
-        return cachedUsers.get(uuid);
+        return getUser(UUID.fromString(uuid));
     }
 
     public EcoUser getUser(UUID uuid) {
@@ -43,6 +43,7 @@ public class UserManager {
             return ecoUser;
         ecoUser = new EcoUser(uuid, economiesManager, config);
         add(ecoUser);
+        ecoUser.setUnsaved();
         storage.save(ecoUser);
         return ecoUser;
     }

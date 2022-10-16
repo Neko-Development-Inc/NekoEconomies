@@ -5,6 +5,8 @@ import n.e.k.o.economies.utils.Config;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -50,18 +52,27 @@ public class EcoUser {
     }
 
     public EcoValue addCurrencyValue(EcoKey currency, int num) {
+        return addCurrencyValue(currency, new BigDecimal(num));
+    }
+    public EcoValue addCurrencyValue(EcoKey currency, BigDecimal num) {
         var ecoValue = balances.get(currency);
         ecoValue.add(num);
         return ecoValue;
     }
 
     public EcoValue subtractCurrencyValue(EcoKey currency, int num) {
+        return subtractCurrencyValue(currency, new BigDecimal(num));
+    }
+    public EcoValue subtractCurrencyValue(EcoKey currency, BigDecimal num) {
         var ecoValue = balances.get(currency);
         ecoValue.subtract(num);
         return ecoValue;
     }
 
     public EcoValue setCurrencyValue(EcoKey currency, int num) {
+        return setCurrencyValue(currency, new BigDecimal(num));
+    }
+    public EcoValue setCurrencyValue(EcoKey currency, BigDecimal num) {
         var ecoValue = balances.get(currency);
         ecoValue.set(num);
         return ecoValue;

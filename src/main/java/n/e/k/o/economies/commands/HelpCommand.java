@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import n.e.k.o.economies.NekoEconomies;
-import n.e.k.o.economies.commands.enums.CommandCtx;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
@@ -14,7 +13,7 @@ import n.e.k.o.economies.utils.StringColorUtils;
 import net.minecraft.command.CommandSource;
 import org.apache.logging.log4j.Logger;
 
-public class EcoCommand implements Command<CommandSource> {
+public class HelpCommand implements Command<CommandSource> {
 
     private final NekoEconomies nekoEconomies;
     private final UserManager userManager;
@@ -24,7 +23,7 @@ public class EcoCommand implements Command<CommandSource> {
     private final Config config;
     private final Logger logger;
 
-    public EcoCommand(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, IStorage storage, CommandHelper commandHelper, Config config, Logger logger) {
+    public HelpCommand(NekoEconomies nekoEconomies, UserManager userManager, EconomiesManager economiesManager, IStorage storage, CommandHelper commandHelper, Config config, Logger logger) {
         this.nekoEconomies = nekoEconomies;
         this.userManager = userManager;
         this.economiesManager = economiesManager;
@@ -37,11 +36,10 @@ public class EcoCommand implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
         var source = ctx.getSource();
-        if (!commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, true))
+        if (!commandHelper.canExecuteCommand(source, config.settings.permissions.help, true))
             return SINGLE_SUCCESS;
 
-        source.sendFeedback(StringColorUtils.getColoredString("BalanceCommand command"), true);
-        var player = source.asPlayer();
+        source.sendFeedback(StringColorUtils.getColoredString("HelpCommand command"), true);
 
 
 

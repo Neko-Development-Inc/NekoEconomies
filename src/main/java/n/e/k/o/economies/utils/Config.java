@@ -58,6 +58,7 @@ public class Config {
                 public String db;
                 public String user;
                 public String password;
+                public boolean minify;
                 public String CREATE_TABLE_USERS;
                 public String GET_ALL_USERS;
                 public String SAVE_USERS;
@@ -66,6 +67,7 @@ public class Config {
 
             public static class Flatfile {
                 public boolean enabled;
+                public boolean minify;
             }
         }
 
@@ -85,33 +87,40 @@ public class Config {
 
         public static class Permissions {
             public String access;
+            public String baltop;
             public String reload;
             public String help;
             public String admin;
         }
 
         public static class Commands {
-            public Root root;
+            public Eco eco;
             public Balance balance;
+            public BalanceTop baltop;
 
             public abstract static class CommandRoot {
                 public String command;
                 public ArrayList<String> aliases;
             }
 
-            public static class Root extends CommandRoot { }
-
-            public static class Balance extends CommandRoot {
+            public static class Eco extends CommandRoot {
                 public Set set;
-                public Get get;
                 public Clear clear;
+                public Help help;
+                public Reload reload;
 
                 public static class Set extends CommandRoot { }
 
-                public static class Get extends CommandRoot { }
-
                 public static class Clear extends CommandRoot { }
+
+                public static class Help extends CommandRoot { }
+
+                public static class Reload extends CommandRoot { }
             }
+
+            public static class Balance extends CommandRoot { }
+
+            public static class BalanceTop extends CommandRoot { }
         }
     }
 
