@@ -1,7 +1,6 @@
 package n.e.k.o.economies;
 
 import com.google.gson.Gson;
-import n.e.k.o.economies.utils.CommandHelper;
 import n.e.k.o.economies.eco.EcoKey;
 import n.e.k.o.economies.eco.EcoUser;
 import n.e.k.o.economies.eco.EcoValue;
@@ -10,6 +9,7 @@ import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.StorageManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
+import n.e.k.o.economies.utils.CommandHelper;
 import n.e.k.o.economies.utils.Config;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -110,15 +110,15 @@ public class NekoEconomies {
         return currencies;
     }
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public CompletableFuture<Void> runAsync(Runnable r) {
+    public static CompletableFuture<Void> runAsync(Runnable r) {
         return CompletableFuture.runAsync(() -> executor.execute(r));
     }
 
-    private final Queue<Runnable> rQueue = new ConcurrentLinkedQueue<>();
+    private static final Queue<Runnable> rQueue = new ConcurrentLinkedQueue<>();
 
-    public void runSync(Runnable r) {
+    public static void runSync(Runnable r) {
         if (r == null) return;
         rQueue.add(r);
     }

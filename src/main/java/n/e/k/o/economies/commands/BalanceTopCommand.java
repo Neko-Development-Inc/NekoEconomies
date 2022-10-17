@@ -1,12 +1,10 @@
 package n.e.k.o.economies.commands;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.commands.enums.CommandCtx;
-import n.e.k.o.economies.eco.EcoUser;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
@@ -14,7 +12,6 @@ import n.e.k.o.economies.utils.CommandHelper;
 import n.e.k.o.economies.utils.Config;
 import n.e.k.o.economies.utils.StringColorUtils;
 import net.minecraft.command.CommandSource;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.Logger;
 
 public class BalanceTopCommand implements Command<CommandSource> {
@@ -43,7 +40,7 @@ public class BalanceTopCommand implements Command<CommandSource> {
         if (!commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, config.settings.permissions.baltop, true))
             return SINGLE_SUCCESS;
 
-        source.sendFeedback(StringColorUtils.getColoredString("Top 1000 balances:"), true);
+        source.sendFeedback(StringColorUtils.getColoredString("Top 10 balances:"), true);
 
 
 

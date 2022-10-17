@@ -48,19 +48,11 @@ public class EcoAddCommand implements Command<CommandSource> {
 
         source.sendFeedback(StringColorUtils.getColoredString("BalanceAddCommand command"), true);
 
-        String num;
+        BigDecimal num;
         try {
-            num = ctx.getArgument("num", String.class);
+            num = ctx.getArgument("num", BigDecimal.class);
         } catch (IllegalArgumentException e) {
-            // Error maybe?
-            return 0;
-        }
-
-        BigDecimal bigDecimal;
-        try {
-            bigDecimal = new BigDecimal(num);
-        } catch (Throwable t) {
-            // Error maybe?
+            source.sendFeedback(StringColorUtils.getColoredString("No value set."), true);
             return 0;
         }
 
@@ -94,7 +86,7 @@ public class EcoAddCommand implements Command<CommandSource> {
         else
             logger.info("Setting balance for player " + otherPlayer.uuid + " for currency " + ecoKey.getId());
 
-        EcoValue ecoValue = otherPlayer.addCurrencyValue(ecoKey, bigDecimal);
+        EcoValue ecoValue = otherPlayer.addCurrencyValue(ecoKey, num);
         logger.info("  New balance: " + ecoValue.getBalanceString(3));
 
         return SINGLE_SUCCESS;

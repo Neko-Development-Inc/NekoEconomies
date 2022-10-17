@@ -18,8 +18,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
-
 public class EcoSetCommand implements Command<CommandSource> {
 
     private final NekoEconomies nekoEconomies;
@@ -48,22 +46,6 @@ public class EcoSetCommand implements Command<CommandSource> {
 
         source.sendFeedback(StringColorUtils.getColoredString("BalanceSetCommand command"), true);
 
-        String num;
-        try {
-            num = ctx.getArgument("num", String.class);
-        } catch (IllegalArgumentException e) {
-            // Error maybe?
-            return 0;
-        }
-
-        BigDecimal bigDecimal;
-        try {
-            bigDecimal = new BigDecimal(num);
-        } catch (Throwable t) {
-            // Error maybe?
-            return 0;
-        }
-
         EcoUser otherPlayer;
         try {
             String playerName = ctx.getArgument("player", String.class);
@@ -75,6 +57,14 @@ public class EcoSetCommand implements Command<CommandSource> {
             otherPlayer = userManager.getUser(profile.getId());
         } catch (IllegalArgumentException e) {
             otherPlayer = userManager.getUser(source.asPlayer().getUniqueID());
+        }
+
+        long num;
+        try {
+            num = ctx.getArgument("num", Long.class);
+        } catch (IllegalArgumentException e) {
+            source.sendFeedback(StringColorUtils.getColoredString("No value set."), true);
+            return 0;
         }
 
         EcoKey ecoKey;
@@ -94,7 +84,7 @@ public class EcoSetCommand implements Command<CommandSource> {
         else
             logger.info("Setting balance for player " + otherPlayer.uuid + " for currency " + ecoKey.getId());
 
-        EcoValue ecoValue = otherPlayer.setCurrencyValue(ecoKey, bigDecimal);
+        EcoValue ecoValue = otherPlayer.setCurrencyValue(ecoKey, num);
         logger.info("  New balance: " + ecoValue.getBalanceString(3));
 
         return SINGLE_SUCCESS;

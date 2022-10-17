@@ -88,6 +88,15 @@ public class EcoValue {
     public BigDecimal add(int num) {
         return add(BigDecimal.valueOf(num));
     }
+    public BigDecimal add(long num) {
+        return add(BigDecimal.valueOf(num));
+    }
+    public BigDecimal add(float num) {
+        return add(BigDecimal.valueOf(num));
+    }
+    public BigDecimal add(double num) {
+        return add(BigDecimal.valueOf(num));
+    }
     public BigDecimal add(BigDecimal num) {
         synchronized (_lock) {
             balance = balance.add(num);
@@ -99,6 +108,15 @@ public class EcoValue {
     public BigDecimal subtract(int num) {
         return subtract(BigDecimal.valueOf(num));
     }
+    public BigDecimal subtract(long num) {
+        return subtract(BigDecimal.valueOf(num));
+    }
+    public BigDecimal subtract(float num) {
+        return subtract(BigDecimal.valueOf(num));
+    }
+    public BigDecimal subtract(double num) {
+        return subtract(BigDecimal.valueOf(num));
+    }
     public BigDecimal subtract(BigDecimal num) {
         synchronized (_lock) {
             balance = balance.subtract(num);
@@ -108,6 +126,15 @@ public class EcoValue {
     }
 
     public BigDecimal set(int num) {
+        return set(BigDecimal.valueOf(num));
+    }
+    public BigDecimal set(long num) {
+        return set(BigDecimal.valueOf(num));
+    }
+    public BigDecimal set(float num) {
+        return set(BigDecimal.valueOf(num));
+    }
+    public BigDecimal set(double num) {
         return set(BigDecimal.valueOf(num));
     }
     public BigDecimal set(BigDecimal num) {
@@ -129,6 +156,15 @@ public class EcoValue {
     public boolean isGreaterThan(int num) {
         return isGreaterThan(BigDecimal.valueOf(num));
     }
+    public boolean isGreaterThan(long num) {
+        return isGreaterThan(BigDecimal.valueOf(num));
+    }
+    public boolean isGreaterThan(float num) {
+        return isGreaterThan(BigDecimal.valueOf(num));
+    }
+    public boolean isGreaterThan(double num) {
+        return isGreaterThan(BigDecimal.valueOf(num));
+    }
     public boolean isGreaterThan(BigDecimal num) {
         synchronized (_lock) {
             return balance.compareTo(num) >= 0;
@@ -137,6 +173,15 @@ public class EcoValue {
 
     // Synchronically move money from one user to another
     public boolean moveBalance(int num, EcoValue toOther) {
+        return moveBalance(BigDecimal.valueOf(num), toOther);
+    }
+    public boolean moveBalance(long num, EcoValue toOther) {
+        return moveBalance(BigDecimal.valueOf(num), toOther);
+    }
+    public boolean moveBalance(float num, EcoValue toOther) {
+        return moveBalance(BigDecimal.valueOf(num), toOther);
+    }
+    public boolean moveBalance(double num, EcoValue toOther) {
         return moveBalance(BigDecimal.valueOf(num), toOther);
     }
     public boolean moveBalance(BigDecimal num, EcoValue toOther) {
@@ -154,6 +199,38 @@ public class EcoValue {
                 return true;
             }
         }
+    }
+
+    public int intVal() {
+        return balance.intValue();
+    }
+
+    public int intValExact() {
+        return balance.intValueExact();
+    }
+
+    public short shortVal() {
+        return balance.shortValue();
+    }
+
+    public short shortValExact() {
+        return balance.shortValueExact();
+    }
+
+    public long longVal() {
+        return balance.longValue();
+    }
+
+    public long longValExact() {
+        return balance.longValueExact();
+    }
+
+    public float floatVal() {
+        return balance.floatValue();
+    }
+
+    public double doubleVal() {
+        return balance.doubleValue();
     }
 
 }
