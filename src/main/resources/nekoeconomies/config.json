@@ -6,19 +6,22 @@
     "currencies": [
       {
         "id": "pokedollars",
-        "displayName": "",
+        "displayName": "Pokêdollars",
+        "symbol": "",
         "defaultValue": "1000",
         "isDefaultCurrency": true
       },
       {
         "id": "tokens",
-        "defaultValue": "1",
-        "displayName": "T"
+        "displayName": "Tokens",
+        "symbol": "T",
+        "defaultValue": "1"
       },
       {
         "id": "coins",
-        "defaultValue": "2",
-        "displayName": "C"
+        "displayName": "Coins",
+        "symbol": "C",
+        "defaultValue": "2"
       }
     ],
 
@@ -106,6 +109,10 @@
         "reload": {
           "command": "reload",
           "aliases": [ "r" ]
+        },
+        "save": {
+          "command": "save",
+          "aliases": [ ]
         }
       },
       "balance": {

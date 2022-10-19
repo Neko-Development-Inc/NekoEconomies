@@ -35,6 +35,7 @@ public class Config {
         public static class Currency {
             public String id;
             public String displayName;
+            public String symbol;
             public String defaultValue;
             public boolean isDefaultCurrency;
         }
@@ -110,6 +111,7 @@ public class Config {
                 public Clear clear;
                 public Help help;
                 public Reload reload;
+                public Save save;
 
                 public static class Set extends CommandRoot { }
 
@@ -122,6 +124,8 @@ public class Config {
                 public static class Help extends CommandRoot { }
 
                 public static class Reload extends CommandRoot { }
+
+                public static class Save extends CommandRoot { }
             }
 
             public static class Balance extends CommandRoot { }

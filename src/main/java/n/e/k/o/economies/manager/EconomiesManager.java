@@ -28,12 +28,13 @@ public class EconomiesManager {
     public boolean init() {
         try {
             for (var currency : config.settings.currencies) {
-                var key = new EcoKey(currency.id, currency.displayName, currency.defaultValue);
+                var key = new EcoKey(currency.id, currency.displayName, currency.symbol, currency.defaultValue);
                 if (currency.isDefaultCurrency)
                     defaultCurrency = key;
                 add(key);
                 logger.info("Adding EcoKey. key = '" + key.getId() + "', displayName = '" +
-                        key.getDisplayName() + "', defaultValue = '" + key.getDefaultValue() + "'." +
+                        key.getDisplayName() + "', symbol = '" +
+                        key.getSymbol() + "', defaultValue = '" + key.getDefaultValue() + "'." +
                         (currency.isDefaultCurrency ? " Default currency." : ""));
             }
             return true;

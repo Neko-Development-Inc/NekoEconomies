@@ -1,6 +1,7 @@
 package n.e.k.o.economies.manager;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -42,36 +43,6 @@ public class CommandManager {
         this.logger = logger;
     }
 
-//    public void init(CommandDispatcher<CommandSource> dispatcher) {
-//        var eco = new EcoCommand(nekoEconomies, userManager, economiesManager, storage, commandHelper, config, logger);
-//        var cmd = Commands.literal("eco").executes(eco);
-//        PermissionAPI.registerNode("minecraft.command.eco", DefaultPermissionLevel.ALL, "Pixelmon Economies /eco");
-//        dispatcher.register(cmd);
-//        {
-//            var ecoSet = new EcoSetCommand(nekoEconomies, userManager, economiesManager, storage, commandHelper, config, logger);
-//            var cmdSet = cmd.then(Commands.literal("set").executes(ecoSet));
-//            dispatcher.register(cmdSet);
-//            {
-//                var ecoSetNum = new EcoSetCommand.SetNum(commandHelper);
-//                var cmdSetNum = cmdSet.then(Commands.argument("num", StringArgumentType.word()).executes(ecoSetNum));
-//                dispatcher.register(cmdSetNum);
-//
-//                var ecoSetPlayerNum = new EcoSetCommand.SetPlayerNum(commandHelper);
-//                var cmdSetPlayerNum = cmdSetNum.then(Commands.argument("player", StringArgumentType.word()).executes(ecoSetPlayerNum));
-//                dispatcher.register(cmdSetPlayerNum);
-//            }
-//            {
-//                var ecoSetNumCurrency = new EcoSetCommand.SetNumCurrency(commandHelper);
-//                var cmdSetNumCurrency = cmdSet.then(Commands.argument("num", StringArgumentType.word()).executes(ecoSetNumCurrency));
-//                dispatcher.register(cmdSetNumCurrency);
-//
-//                var ecoSetPlayerNumCurrency = new EcoSetCommand.SetPlayerNumCurrency(commandHelper);
-//                var cmdSetPlayerNumCurrency = cmdSetNumCurrency.then(Commands.argument("num", StringArgumentType.word()).executes(ecoSetPlayerNumCurrency));
-//                dispatcher.register(cmdSetPlayerNumCurrency);
-//            }
-//        }
-//    }
-
     public void init(CommandDispatcher<CommandSource> dispatcher) {
         List<LiteralArgumentBuilder<CommandSource>> ecos = new ArrayList<>();
 
@@ -100,7 +71,7 @@ public class CommandManager {
                             .then(Commands.argument("player", StringArgumentType.word())
                                     .suggests(commandHelper::suggestOnlinePlayers)
                                     .requires(commandHelper::canExecuteCommand)
-                                    .then(Commands.argument("num", LongArgumentType.longArg())
+                                    .then(Commands.argument("num", DoubleArgumentType.doubleArg())
                                             .requires(commandHelper::canExecuteCommand)
                                             .then(Commands.argument("currency", StringArgumentType.word())
                                                     .suggests(commandHelper::suggestCurrencies)
@@ -110,7 +81,7 @@ public class CommandManager {
                                             .executes(set)
                                     )
                             )
-                            .then(Commands.argument("num", LongArgumentType.longArg())
+                            .then(Commands.argument("num", DoubleArgumentType.doubleArg())
                                     .executes(set)
                                     .requires(commandHelper::canExecuteCommand)
                                     .then(Commands.argument("currency", StringArgumentType.word())
@@ -134,7 +105,7 @@ public class CommandManager {
                             .then(Commands.argument("player", StringArgumentType.word())
                                     .suggests(commandHelper::suggestOnlinePlayers)
                                     .requires(commandHelper::canExecuteCommand)
-                                    .then(Commands.argument("num", LongArgumentType.longArg())
+                                    .then(Commands.argument("num", DoubleArgumentType.doubleArg())
                                             .executes(add)
                                             .requires(commandHelper::canExecuteCommand)
                                             .then(Commands.argument("currency", StringArgumentType.word())
@@ -143,7 +114,7 @@ public class CommandManager {
                                                     .requires(commandHelper::canExecuteCommand)
                                             )
                                     )
-                            ).then(Commands.argument("num", LongArgumentType.longArg())
+                            ).then(Commands.argument("num", DoubleArgumentType.doubleArg())
                                     .executes(add)
                                     .requires(commandHelper::canExecuteCommand)
                                     .then(Commands.argument("currency", StringArgumentType.word())
@@ -167,7 +138,7 @@ public class CommandManager {
                             .then(Commands.argument("player", StringArgumentType.word())
                                     .suggests(commandHelper::suggestOnlinePlayers)
                                     .requires(commandHelper::canExecuteCommand)
-                                    .then(Commands.argument("num", LongArgumentType.longArg())
+                                    .then(Commands.argument("num", DoubleArgumentType.doubleArg())
                                             .executes(subtract)
                                             .requires(commandHelper::canExecuteCommand)
                                             .then(Commands.argument("currency", StringArgumentType.word())
@@ -176,7 +147,7 @@ public class CommandManager {
                                                     .requires(commandHelper::canExecuteCommand)
                                             )
                                     )
-                            ).then(Commands.argument("num", LongArgumentType.longArg())
+                            ).then(Commands.argument("num", DoubleArgumentType.doubleArg())
                                     .executes(subtract)
                                     .requires(commandHelper::canExecuteCommand)
                                     .then(Commands.argument("currency", StringArgumentType.word())
@@ -231,6 +202,19 @@ public class CommandManager {
                 for (var strCommand : commandStrings) {
                     var cmd = Commands.literal(strCommand)
                             .executes(reload)
+                            .requires(commandHelper::canExecuteCommand);
+                    for (LiteralArgumentBuilder<CommandSource> literalArgumentBuilder : ecos)
+                        dispatcher.register(literalArgumentBuilder.then(cmd));
+                }
+            }
+
+            // /eco save
+            var save = new SaveCommand(nekoEconomies, userManager, economiesManager, storage, commandHelper, config, logger); {
+                var commandStrings = new ArrayList<>(config.settings.commands.eco.save.aliases);
+                commandStrings.add(0, config.settings.commands.eco.save.command);
+                for (var strCommand : commandStrings) {
+                    var cmd = Commands.literal(strCommand)
+                            .executes(save)
                             .requires(commandHelper::canExecuteCommand);
                     for (LiteralArgumentBuilder<CommandSource> literalArgumentBuilder : ecos)
                         dispatcher.register(literalArgumentBuilder.then(cmd));

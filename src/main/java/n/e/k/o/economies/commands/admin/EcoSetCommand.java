@@ -59,9 +59,9 @@ public class EcoSetCommand implements Command<CommandSource> {
             otherPlayer = userManager.getUser(source.asPlayer().getUniqueID());
         }
 
-        long num;
+        double num;
         try {
-            num = ctx.getArgument("num", Long.class);
+            num = ctx.getArgument("num", Double.class);
         } catch (IllegalArgumentException e) {
             source.sendFeedback(StringColorUtils.getColoredString("No value set."), true);
             return 0;

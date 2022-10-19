@@ -2,6 +2,7 @@ package n.e.k.o.economies;
 
 import n.e.k.o.economies.eco.EcoKey;
 import n.e.k.o.economies.eco.EcoUser;
+import n.e.k.o.economies.exceptions.ApiNotYetAvailable;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.utils.Config;
@@ -41,8 +42,28 @@ public class NekoEconomiesAPI {
         }
     }
 
+    /**
+     * @return an API instance, null if not available yet, or throws ApiNotYetAvailable (n.e.k.o.economies.exceptions.ApiNotYetAvailable) if doThrow == true
+     */
+    public static NekoEconomiesAPI get(boolean doThrow) {
+        return doThrow ? getOrThrow() : get();
+    }
+
+    /**
+     * @return an API instance, or null if not available yet
+     */
     public static NekoEconomiesAPI get() {
         synchronized (instanceLock) {
+            return instance;
+        }
+    }
+
+    /**
+     * @return an API instance, or throws ApiNotYetAvailable (n.e.k.o.economies.exceptions.ApiNotYetAvailable)
+     */
+    public static NekoEconomiesAPI getOrThrow() {
+        synchronized (instanceLock) {
+            if (instance == null) throw ApiNotYetAvailable.THROW;
             return instance;
         }
     }

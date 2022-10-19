@@ -48,9 +48,9 @@ public class EcoSubtractCommand implements Command<CommandSource> {
 
         source.sendFeedback(StringColorUtils.getColoredString("BalanceSubtractCommand command"), true);
 
-        BigDecimal num;
+        double num;
         try {
-            num = ctx.getArgument("num", BigDecimal.class);
+            num = ctx.getArgument("num", Double.class);
         } catch (IllegalArgumentException e) {
             source.sendFeedback(StringColorUtils.getColoredString("No value set."), true);
             return 0;

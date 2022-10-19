@@ -3,7 +3,9 @@ package n.e.k.o.economies.eco;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class EcoValue {
@@ -60,29 +62,17 @@ public class EcoValue {
         }
     }
 
-    private static final Map<Integer, DecimalFormat> formatters = new HashMap<>(){{
-        for (int i = 0; i <= 4; i++) {
-            var df = new DecimalFormat();
-            df.setMaximumFractionDigits(i);
-            df.setMinimumFractionDigits(0);
-            df.setGroupingUsed(false);
-            put(i, df);
-        }
-    }};
-
     public String getBalanceString(int decimals) {
-        var df = formatters.get(decimals);
-        if (df == null) {
-            df = new DecimalFormat();
-            df.setRoundingMode(RoundingMode.DOWN);
-            df.setMaximumFractionDigits(decimals);
-            df.setMinimumFractionDigits(0);
-            df.setGroupingUsed(false);
-            formatters.put(decimals, df);
-        }
-        synchronized (_lock) {
-            return df.format(balance.stripTrailingZeros());
-        }
+        return getBalanceString(decimals, false);
+    }
+
+    public String getBalanceString(int decimals, boolean useGrouping) {
+        var nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+        nf.setMinimumFractionDigits(0);
+        nf.setMaximumFractionDigits(decimals);
+        nf.setMinimumIntegerDigits(3);
+        nf.setGroupingUsed(useGrouping);
+        return nf.format(balance);
     }
 
     public BigDecimal add(int num) {
