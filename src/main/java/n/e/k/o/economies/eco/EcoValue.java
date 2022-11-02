@@ -72,7 +72,7 @@ public class EcoValue {
         nf.setMaximumFractionDigits(decimals);
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(useGrouping);
-        return nf.format(balance);
+        return nf.format(balance).replaceFirst("^0+(?!$)", "");
     }
 
     public BigDecimal add(int num) {
@@ -186,6 +186,8 @@ public class EcoValue {
                     return false;
                 }
                 toOther.balance = toOther.balance.add(num);
+                user.setUnsaved();
+                toOther.getUser().setUnsaved();
                 return true;
             }
         }
