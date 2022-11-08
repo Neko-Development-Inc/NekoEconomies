@@ -1,18 +1,19 @@
 package n.e.k.o.economies.eco;
 
+import n.e.k.o.economies.manager.EconomiesManager;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 public class EcoValue {
 
     private final EcoUser user;
     private final EcoKey currency;
     private BigDecimal balance;
+
+    private final EconomiesManager economiesManager;
+    private final boolean overridePixelmonCurrency;
 
     private transient final Object _lock = new Object();
 
@@ -32,6 +33,22 @@ public class EcoValue {
         this.user = user;
         this.currency = currency;
         this.balance = num;
+        this.economiesManager = user.getEconomiesManager();
+        this.overridePixelmonCurrency = currency.isOverridePixelmonCurrency();
+        this.setDefaultPixelmonCurrencyBalance();
+    }
+
+    private void setDefaultPixelmonCurrencyBalance() {
+//        System.out.println("new EcoValue(" + getId() + "): " + overridePixelmonCurrency);
+        if (overridePixelmonCurrency) {
+            var current = economiesManager.getPixelmonCurrency(user.uuid);
+//            System.out.println("!!! Current pixelmon balance: " + current);
+            if (BigDecimal.ZERO.equals(current)) {
+                economiesManager.setPixelmonCurrency(user.uuid, balance);
+                var newBalance = economiesManager.getPixelmonCurrency(user.uuid);
+//                System.out.println("!!! New pixelmon balance: " + newBalance);
+            }
+        }
     }
 
     public EcoKey getCurrency() {
@@ -52,13 +69,22 @@ public class EcoValue {
 
     public BigDecimal getBalance() {
         synchronized (_lock) {
+            if (overridePixelmonCurrency) {
+                return economiesManager.getPixelmonCurrency(user.uuid);
+            }
             return balance;
         }
     }
 
     public String getBalanceString() {
         synchronized (_lock) {
-            return balance.stripTrailingZeros().toPlainString();
+            BigDecimal tmp;
+            if (overridePixelmonCurrency) {
+                tmp = economiesManager.getPixelmonCurrency(user.uuid);
+            } else {
+                tmp = balance;
+            }
+            return tmp.stripTrailingZeros().toPlainString();
         }
     }
 
@@ -72,7 +98,13 @@ public class EcoValue {
         nf.setMaximumFractionDigits(decimals);
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(useGrouping);
-        return nf.format(balance).replaceFirst("^0+(?!$)", "");
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return nf.format(tmp).replaceFirst("^0+(?!$)", "");
     }
 
     public BigDecimal add(int num) {
@@ -89,9 +121,20 @@ public class EcoValue {
     }
     public BigDecimal add(BigDecimal num) {
         synchronized (_lock) {
-            balance = balance.add(num);
-            user.setUnsaved();
-            return balance;
+            BigDecimal tmp;
+            if (overridePixelmonCurrency) {
+                tmp = economiesManager.getPixelmonCurrency(user.uuid);
+            } else {
+                tmp = balance;
+            }
+            tmp = tmp.add(num);
+            if (overridePixelmonCurrency) {
+                economiesManager.setPixelmonCurrency(user.uuid, tmp);
+            } else {
+                balance = tmp;
+                user.setUnsaved();
+            }
+            return tmp;
         }
     }
 
@@ -109,9 +152,20 @@ public class EcoValue {
     }
     public BigDecimal subtract(BigDecimal num) {
         synchronized (_lock) {
-            balance = balance.subtract(num);
-            user.setUnsaved();
-            return balance;
+            BigDecimal tmp;
+            if (overridePixelmonCurrency) {
+                tmp = economiesManager.getPixelmonCurrency(user.uuid);
+            } else {
+                tmp = balance;
+            }
+            tmp = tmp.subtract(num);
+            if (overridePixelmonCurrency) {
+                economiesManager.setPixelmonCurrency(user.uuid, tmp);
+            } else {
+                balance = tmp;
+                user.setUnsaved();
+            }
+            return tmp;
         }
     }
 
@@ -129,17 +183,26 @@ public class EcoValue {
     }
     public BigDecimal set(BigDecimal num) {
         synchronized (_lock) {
-            balance = num;
-            user.setUnsaved();
-            return balance;
+            if (overridePixelmonCurrency) {
+                economiesManager.setPixelmonCurrency(user.uuid, num);
+            } else {
+                balance = num;
+                user.setUnsaved();
+            }
+            return num;
         }
     }
 
     public BigDecimal clear() {
         synchronized (_lock) {
-            balance = new BigDecimal(0);
-            user.setUnsaved();
-            return balance;
+            BigDecimal tmp = new BigDecimal(0);
+            if (overridePixelmonCurrency) {
+                economiesManager.setPixelmonCurrency(user.uuid, tmp);
+            } else {
+                balance = tmp;
+                user.setUnsaved();
+            }
+            return tmp;
         }
     }
 
@@ -157,7 +220,13 @@ public class EcoValue {
     }
     public boolean isGreaterThan(BigDecimal num) {
         synchronized (_lock) {
-            return balance.compareTo(num) >= 0;
+            BigDecimal tmp;
+            if (overridePixelmonCurrency) {
+                tmp = economiesManager.getPixelmonCurrency(user.uuid);
+            } else {
+                tmp = balance;
+            }
+            return tmp.compareTo(num) >= 0;
         }
     }
 
@@ -176,53 +245,121 @@ public class EcoValue {
     }
     public boolean moveBalance(BigDecimal num, EcoValue toOther) {
         synchronized (_lock) {
-            if (balance.compareTo(num) < 0) // Not enough money!
+            BigDecimal tmp;
+            if (overridePixelmonCurrency) {
+                tmp = economiesManager.getPixelmonCurrency(user.uuid);
+            } else {
+                tmp = balance;
+            }
+            if (tmp.compareTo(num) < 0) // Not enough money!
                 return false;
             synchronized (toOther._lock) {
-                var tmp = balance;
-                balance = balance.subtract(num);
-                if (balance.compareTo(BigDecimal.ZERO) < 0) { // Somehow we ended up at negative balance, abort!
-                    balance = tmp;
+                var copy = tmp;
+                tmp = tmp.subtract(num);
+                if (tmp.compareTo(BigDecimal.ZERO) < 0) { // Somehow we ended up at negative balance, abort!
+                    if (!overridePixelmonCurrency)
+                        balance = copy;
                     return false;
                 }
-                toOther.balance = toOther.balance.add(num);
-                user.setUnsaved();
-                toOther.getUser().setUnsaved();
+                if (overridePixelmonCurrency) {
+                    economiesManager.setPixelmonCurrency(user.uuid, tmp);
+                } else {
+                    balance = tmp;
+                    user.setUnsaved();
+                }
+                if (toOther.isOverridePixelmonCurrency()) {
+                    economiesManager.setPixelmonCurrency(toOther.user.uuid, toOther.getBalance().add(num));
+                } else {
+                    toOther.balance = toOther.balance.add(num);
+                    toOther.user.setUnsaved();
+                }
                 return true;
             }
         }
     }
 
     public int intVal() {
-        return balance.intValue();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.intValue();
     }
 
     public int intValExact() {
-        return balance.intValueExact();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.intValueExact();
     }
 
     public short shortVal() {
-        return balance.shortValue();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.shortValue();
     }
 
     public short shortValExact() {
-        return balance.shortValueExact();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.shortValueExact();
     }
 
     public long longVal() {
-        return balance.longValue();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.longValue();
     }
 
     public long longValExact() {
-        return balance.longValueExact();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.longValueExact();
     }
 
     public float floatVal() {
-        return balance.floatValue();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.floatValue();
     }
 
     public double doubleVal() {
-        return balance.doubleValue();
+        BigDecimal tmp;
+        if (overridePixelmonCurrency) {
+            tmp = economiesManager.getPixelmonCurrency(user.uuid);
+        } else {
+            tmp = balance;
+        }
+        return tmp.doubleValue();
+    }
+
+    public boolean isOverridePixelmonCurrency() {
+        return overridePixelmonCurrency;
     }
 
 }

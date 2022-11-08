@@ -6,12 +6,14 @@ public class EcoKey {
     private final String displayName;
     private final String symbol;
     private final String defaultValue;
+    private final boolean overridePixelmonCurrency;
 
-    public EcoKey(String id, String displayName, String symbol, String defaultValue) {
+    public EcoKey(String id, String displayName, String symbol, String defaultValue, boolean overridePixelmonCurrency) {
         this.id = id;
         this.displayName = displayName;
         this.symbol = symbol;
         this.defaultValue = defaultValue;
+        this.overridePixelmonCurrency = overridePixelmonCurrency;
     }
 
     public String getId() {
@@ -28,6 +30,10 @@ public class EcoKey {
 
     public String getDefaultValue() {
         return defaultValue;
+    }
+
+    public boolean isOverridePixelmonCurrency() {
+        return overridePixelmonCurrency;
     }
 
 }

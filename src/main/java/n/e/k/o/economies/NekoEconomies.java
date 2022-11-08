@@ -106,7 +106,8 @@ public class NekoEconomies {
     public static Map<String, String> currenciesToMapString(Map<EcoKey, EcoValue> balances) {
         var currencies = new HashMap<String, String>();
         for (var ecoKey : balances.keySet())
-            currencies.put(ecoKey.getId(), balances.get(ecoKey).getBalanceString());
+            if (!ecoKey.isOverridePixelmonCurrency())
+                currencies.put(ecoKey.getId(), balances.get(ecoKey).getBalanceString());
         return currencies;
     }
 

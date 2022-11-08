@@ -9,7 +9,8 @@
         "displayName": "Pokêdollars",
         "symbol": "",
         "defaultValue": "1000",
-        "isDefaultCurrency": true
+        "isDefaultCurrency": true,
+        "overridePixelmonCurrency": true
       },
       {
         "id": "tokens",

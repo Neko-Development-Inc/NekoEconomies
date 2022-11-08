@@ -38,6 +38,7 @@ public class Config {
             public String symbol;
             public String defaultValue;
             public boolean isDefaultCurrency;
+            public boolean overridePixelmonCurrency;
         }
 
         public static class Storage {

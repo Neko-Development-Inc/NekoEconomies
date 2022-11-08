@@ -27,7 +27,6 @@ public class EcoUser {
         this(player.getUniqueID(), economiesManager, config);
     }
 
-
     public EcoUser(UUID uuid, EconomiesManager economiesManager, Config config) {
         this.uuid = uuid;
         this.economiesManager = economiesManager;
@@ -290,6 +289,10 @@ public class EcoUser {
             this.uuid = player.getUniqueID();
             this.hasUpdate = true;
         }
+    }
+
+    public EconomiesManager getEconomiesManager() {
+        return this.economiesManager;
     }
 
 }
