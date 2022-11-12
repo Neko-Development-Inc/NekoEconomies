@@ -5,7 +5,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import n.e.k.o.economies.commands.enums.CommandCheckType;
 import n.e.k.o.economies.commands.enums.CommandCtx;
-import n.e.k.o.economies.eco.EcoKey;
+import n.e.k.o.economies.api.EcoKey;
 import n.e.k.o.economies.manager.EconomiesManager;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;

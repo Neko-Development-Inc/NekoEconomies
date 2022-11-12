@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.commands.enums.CommandCtx;
-import n.e.k.o.economies.eco.EcoUser;
+import n.e.k.o.economies.api.EcoUser;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
@@ -40,7 +40,7 @@ public class BalanceCommand implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
         var source = ctx.getSource();
-        if (!commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, true))
+        if (!commandHelper.canExecuteCommand(source, true))
             return SINGLE_SUCCESS;
 
         source.sendFeedback(StringColorUtils.getColoredString("All your balances:"), true);
@@ -55,6 +55,8 @@ public class BalanceCommand implements Command<CommandSource> {
             }
             otherPlayer = userManager.getUser(profile.getId());
         } catch (IllegalArgumentException e) {
+            if (!commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, true))
+                return SINGLE_SUCCESS;
             otherPlayer = userManager.getUser(source.asPlayer().getUniqueID());
         }
 

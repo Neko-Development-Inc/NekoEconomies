@@ -1,4 +1,4 @@
-package n.e.k.o.economies.eco;
+package n.e.k.o.economies.api;
 
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.utils.Config;

@@ -1,7 +1,5 @@
-package n.e.k.o.economies;
+package n.e.k.o.economies.api;
 
-import n.e.k.o.economies.eco.EcoKey;
-import n.e.k.o.economies.eco.EcoUser;
 import n.e.k.o.economies.exceptions.ApiNotYetAvailable;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;

@@ -1,4 +1,4 @@
-package n.e.k.o.economies.eco;
+package n.e.k.o.economies.api;
 
 import n.e.k.o.economies.manager.EconomiesManager;
 
@@ -43,9 +43,9 @@ public class EcoValue {
         if (overridePixelmonCurrency) {
             var current = economiesManager.getPixelmonCurrency(user.uuid);
 //            System.out.println("!!! Current pixelmon balance: " + current);
-            if (BigDecimal.ZERO.equals(current)) {
+            if (BigDecimal.ZERO.equals(current)) { // TODO: Check if this is exploitable by just having 0 cash lmao
                 economiesManager.setPixelmonCurrency(user.uuid, balance);
-                var newBalance = economiesManager.getPixelmonCurrency(user.uuid);
+//                var newBalance = economiesManager.getPixelmonCurrency(user.uuid);
 //                System.out.println("!!! New pixelmon balance: " + newBalance);
             }
         }

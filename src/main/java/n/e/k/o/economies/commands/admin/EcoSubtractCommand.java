@@ -5,9 +5,9 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import n.e.k.o.economies.NekoEconomies;
-import n.e.k.o.economies.eco.EcoKey;
-import n.e.k.o.economies.eco.EcoUser;
-import n.e.k.o.economies.eco.EcoValue;
+import n.e.k.o.economies.api.EcoKey;
+import n.e.k.o.economies.api.EcoUser;
+import n.e.k.o.economies.api.EcoValue;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
@@ -17,8 +17,6 @@ import n.e.k.o.economies.utils.StringColorUtils;
 import net.minecraft.command.CommandSource;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.Logger;
-
-import java.math.BigDecimal;
 
 public class EcoSubtractCommand implements Command<CommandSource> {
 

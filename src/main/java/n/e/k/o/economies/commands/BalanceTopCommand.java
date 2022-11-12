@@ -37,7 +37,7 @@ public class BalanceTopCommand implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
         var source = ctx.getSource();
-        if (!commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, config.settings.permissions.baltop, true))
+        if (!commandHelper.canExecuteCommand(source, config.settings.permissions.baltop, true))
             return SINGLE_SUCCESS;
 
         source.sendFeedback(StringColorUtils.getColoredString("Top 10 balances:"), true);

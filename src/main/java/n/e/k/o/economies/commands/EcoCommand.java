@@ -37,7 +37,7 @@ public class EcoCommand implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
         var source = ctx.getSource();
-        if (commandHelper.canExecuteCommand(source, CommandCtx.PLAYER, true))
+        if (commandHelper.canExecuteCommand(source, true))
             source.sendFeedback(StringColorUtils.getColoredString("EcoCommand command"), true);
         return SINGLE_SUCCESS;
     }

@@ -1,8 +1,7 @@
 package n.e.k.o.economies.storage;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import n.e.k.o.economies.eco.EcoUser;
+import n.e.k.o.economies.api.EcoUser;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.UserManager;

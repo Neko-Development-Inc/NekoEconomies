@@ -1,6 +1,6 @@
 package n.e.k.o.economies.manager;
 
-import n.e.k.o.economies.eco.EcoKey;
+import n.e.k.o.economies.api.EcoKey;
 import n.e.k.o.economies.NekoEconomies;
 import n.e.k.o.economies.utils.Config;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package n.e.k.o.economies.eco;
+package n.e.k.o.economies.api;
 
 public class EcoKey {
 

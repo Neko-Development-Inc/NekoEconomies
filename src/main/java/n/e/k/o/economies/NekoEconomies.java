@@ -1,9 +1,10 @@
 package n.e.k.o.economies;
 
 import com.google.gson.Gson;
-import n.e.k.o.economies.eco.EcoKey;
-import n.e.k.o.economies.eco.EcoUser;
-import n.e.k.o.economies.eco.EcoValue;
+import n.e.k.o.economies.api.EcoKey;
+import n.e.k.o.economies.api.EcoUser;
+import n.e.k.o.economies.api.EcoValue;
+import n.e.k.o.economies.api.NekoEconomiesAPI;
 import n.e.k.o.economies.manager.CommandManager;
 import n.e.k.o.economies.manager.EconomiesManager;
 import n.e.k.o.economies.manager.StorageManager;
@@ -11,6 +12,7 @@ import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
 import n.e.k.o.economies.utils.CommandHelper;
 import n.e.k.o.economies.utils.Config;
+import n.e.k.o.economies.utils.GlobalConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -40,6 +42,15 @@ public class NekoEconomies {
     private final CommandHelper commandHelper;
 
     public NekoEconomies() {
+        if (!GlobalConfig.checkEnabled("NekoEconomies", logger)) {
+            logger.warn("Disabling NekoEconomies.");
+            economiesManager = null;
+            commandHelper = null;
+            userManager = null;
+            storage = null;
+            config = null;
+            return;
+        }
         config = Config.init("NekoEconomies", logger);
         if (config == null) {
             logger.error("Failed initializing config.");

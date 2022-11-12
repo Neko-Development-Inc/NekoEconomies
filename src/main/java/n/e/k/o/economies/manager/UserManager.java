@@ -1,7 +1,7 @@
 package n.e.k.o.economies.manager;
 
 import n.e.k.o.economies.NekoEconomies;
-import n.e.k.o.economies.eco.EcoUser;
+import n.e.k.o.economies.api.EcoUser;
 import n.e.k.o.economies.storage.IStorage;
 import n.e.k.o.economies.utils.Config;
 import net.minecraft.entity.player.ServerPlayerEntity;
