@@ -12,7 +12,6 @@ import n.e.k.o.economies.manager.UserManager;
 import n.e.k.o.economies.storage.IStorage;
 import n.e.k.o.economies.utils.CommandHelper;
 import n.e.k.o.economies.utils.Config;
-import n.e.k.o.economies.utils.GlobalConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -42,15 +41,6 @@ public class NekoEconomies {
     private final CommandHelper commandHelper;
 
     public NekoEconomies() {
-        if (!GlobalConfig.checkEnabled("NekoEconomies", logger)) {
-            logger.warn("Disabling NekoEconomies.");
-            economiesManager = null;
-            commandHelper = null;
-            userManager = null;
-            storage = null;
-            config = null;
-            return;
-        }
         config = Config.init("NekoEconomies", logger);
         if (config == null) {
             logger.error("Failed initializing config.");
