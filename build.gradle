@@ -149,9 +149,11 @@ jar {
 }
 
 shadowJar {
-    archiveClassifier = null
+    classifier = null
     configurations = [project.configurations.shade]
-    relocate 'org.apache.commons', "shaded.neko.economies.org.apache.commons"
+    relocate ('org.apache.commons', "shaded.neko.economies.org.apache.commons") {
+        exclude 'org/apache/commons/lang3/**'
+    }
     finalizedBy 'reobfShadowJar'
 }
 
