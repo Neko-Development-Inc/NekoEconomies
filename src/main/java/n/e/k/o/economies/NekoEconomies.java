@@ -120,7 +120,12 @@ public class NekoEconomies {
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public static CompletableFuture<Void> runAsync(Runnable r) {
-        return CompletableFuture.runAsync(() -> executor.execute(r));
+        var future = new CompletableFuture<Void>();
+        executor.execute(() -> {
+            r.run();
+            future.complete(null);
+        });
+        return future;
     }
 
     private static final Queue<Runnable> rQueue = new ConcurrentLinkedQueue<>();

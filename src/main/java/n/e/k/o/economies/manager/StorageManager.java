@@ -25,7 +25,6 @@ public class StorageManager {
             } else if (convertResult instanceof IStorage) {
                 if (config.overwriteConfig(fromStorage, logger)) {
                     logger.info("Conversion successful! Config file was updated to reflect the new values.");
-                    ((IStorage) convertResult).save();
                 }
                 else {
                     var isFile = fromStorage instanceof FlatFileStorage;
@@ -33,6 +32,7 @@ public class StorageManager {
                     String toName = isFile ? "mysql" : "flatfile";
                     logger.warn("Failed overwriting config file! Remember to swap the values in your config file now (" + fromName + " -> " + toName + ") and disable the converter.");
                 }
+                ((IStorage) convertResult).save();
                 return (IStorage) convertResult;
             }
         }

@@ -19,7 +19,7 @@ public class StorageConverter
                     case "mysql": return "Can't convert from 'mysql' to 'mysql'.";
                     case "flatfile": {
                         if (!fromStorage.load())
-                            return "Failed converting from 'mysql' to 'flatfile', because the mysql database exist or wasn't loaded properly.";
+                            return "Failed converting from 'mysql' to 'flatfile', because the mysql database doesn't exist or wasn't loaded properly.";
                         var toStorage = new FlatFileStorage(nekoEconomies, userManager, economiesManager, config, logger);
                         userManager.setAllUnsaved();
                         toStorage.save();
